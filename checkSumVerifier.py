@@ -7,22 +7,22 @@
 
 
 import time
-import ntpath # used for file paths between systems
 import sys # for command line arguments
-import hashlib # for preforming file hases
+import hashlib # for preforming file hashes
 from env import *
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 
 class FileDownloadHandler(FileSystemEventHandler):
-    def on_modified(self, event):
-        file_name = ntpath.basename(event.src_path)
-        if file_name != '.' and file_name != "hashes":
+    def on_created(self, event):
+        file_name, extension = os.path.splitext(event.src_path)
+        print(event)
+        if extension in extension_list and file_name != output_file_name:
             hash_md5 = hashlib.md5()
             hash_sha1 = hashlib.sha1()
-
-            with open("hashes", "a+") as w:
+            file_name += extension
+            with open(output_file_name, "a+") as w:
                 w.writelines(file_name + "\n")
 
                 with open(file_name, "rb") as f:
